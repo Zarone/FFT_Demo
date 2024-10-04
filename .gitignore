@@ -1,3 +1,3 @@
 .DS_Store
-./server/build/
-./server/engine/build/
+server/build/
+server/src/engine/build/
