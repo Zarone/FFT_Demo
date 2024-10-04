@@ -1,3 +1,4 @@
 .DS_Store
 server/build/
 server/src/engine/build/
+server/node_modules

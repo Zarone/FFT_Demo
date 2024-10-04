@@ -1,2 +1,2 @@
-let {method} = require("./engine");
-console.log(method);
+let {method} = require("./engine/engine");
+console.log(method([1, 2, 3]));

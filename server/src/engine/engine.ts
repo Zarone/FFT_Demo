@@ -1,1 +1,3 @@
-module.exports = require('./build/Release/engine')
+// This file simply imports the .node file
+const engine = require('./build/Release/engine.node');
+module.exports = engine;
