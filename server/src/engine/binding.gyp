@@ -2,7 +2,7 @@
   "targets": [
     {
       "target_name": "engine",
-      "sources": [ "main.cpp" ],
+      "sources": [ "./src/main.cpp" ],
     }
   ]
 }

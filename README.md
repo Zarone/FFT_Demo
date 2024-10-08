@@ -14,13 +14,13 @@ npm run dev
 
 ### TODO
 - Minimum Viable Product
-  - Setup React app
   - Setup front end to get audio file data
   - Send audio file data to backend and establish socket
   - Process audio data in backend
     - Split audio into its components
   - Return audio components to front end
-  - Remerge selected audio components
+    - Render audio components on front end once returned from backend
+  - Remerge selected audio components by sending to backend
 - Ideal Additions
-  - After socket established, and backend processed data, have socket send back the data from the file, and render audio file 
-  - Render audio components on front end
+  - After front end recieves audio file, render the data from the audio file 
+    - Get data locally instead of sending it to backend if I can

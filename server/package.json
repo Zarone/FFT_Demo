@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build-engine": "cd ./src/engine && node-gyp configure && node-gyp build",
-    "build-tsc": "cd src && tsc && mkdir -p ../build/engine/build/Release && cp ./engine/build/Release/engine.node ../build/engine/build/Release/engine.node",
-    "start": "node ./build/index.js"
+    "build": "make build",
+    "start": "make start"
   },
   "keywords": [],
   "author": "",
