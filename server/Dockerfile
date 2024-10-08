@@ -17,8 +17,7 @@ COPY . .
 EXPOSE 3000
 
 # Run build step
-RUN npm run build-engine
-RUN npm run build-tsc
+RUN npm run build
 
 # Remove dev dependencies after building
 RUN npm prune --production
