@@ -39,7 +39,7 @@ export default function FilePicker() {
   return (
     <div>
       <input type="file" accept=".mp3" onChange={handleFileChange}/>
-      <Chart y={fileData ? getInterpolation(fileData, 100) : []} />  
+      <Chart data={fileData ? getInterpolation(fileData, 100) : []} />  
     </div>
   );
 }

@@ -1,0 +1,11 @@
+.linechart_path {
+  stroke-width: 3;
+  fill: none;
+}
+
+.linechart_svg {
+  margin: 0 auto;
+  border-color: black;
+  border-radius: 10px;
+  border-width: 2px;
+}
