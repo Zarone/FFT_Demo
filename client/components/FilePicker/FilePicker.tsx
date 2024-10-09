@@ -1,14 +1,12 @@
-import { ChangeEvent, ChangeEventHandler, useState } from "react";
-import Chart from "../Chart/Chart";
+import { ChangeEvent, ChangeEventHandler, useState, Dispatch, SetStateAction } from "react";
 import styles from "./FilePicker.module.css"
 
 interface Args {
   onPick: (x: ArrayBuffer) => void;
+  updateFileData: Dispatch<SetStateAction<ArrayBuffer|undefined>>;
 }
 
-export default function FilePicker( {onPick}: Args ) {
-
-  const [fileData, updateFileData] = useState<ArrayBuffer>();
+export default function FilePicker( {onPick, updateFileData}: Args ) {
 
   const handleFileChange: ChangeEventHandler<HTMLInputElement> = async (event: ChangeEvent<HTMLInputElement>) => {
     // If for some reason the file is not found
@@ -42,7 +40,6 @@ export default function FilePicker( {onPick}: Args ) {
       <div className={styles["f-input-container"]}>
         <input type="file" accept=".wav" onChange={handleFileChange} className={styles["f-input"]}/>
       </div>
-      <Chart data={fileData} />  
     </div>
   );
 }
