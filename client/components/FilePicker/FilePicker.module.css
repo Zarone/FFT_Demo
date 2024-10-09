@@ -1,0 +1,25 @@
+.f-input-container {
+  margin: 10px auto;
+}
+
+.f-input {
+  margin: 1rem;
+  border-color: lightgray;
+  border-width: 2px;
+  padding: 1px;
+}
+
+.f-input::file-selector-button {
+  transition: 0.2s;
+  background-color: white;
+  border-width: 0px 1px 0px 0px;
+  border-style: solid;
+  border-color: lightgray;
+  padding: 1rem;
+}
+
+.f-input::file-selector-button:hover {
+  background-color: #eee;
+  border: 0px;
+  border-right: 1px solid #e5e5e5;
+}

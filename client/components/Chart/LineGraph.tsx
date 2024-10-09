@@ -14,7 +14,7 @@ import Path, { PathParameters } from "./Path"
 export default function LineGraph({data, height, width, color}: PathParameters) {
 
   return <div>
-    <svg height={height} width={width} className={styles["linechart_svg"]}>
+    <svg height={height} width={width} className={styles["linechart-svg"]}>
       <Path data={data} height={height} width={width} color={color}/>
     </svg>
   </div>

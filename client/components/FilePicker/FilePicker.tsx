@@ -1,19 +1,14 @@
 import { ChangeEvent, ChangeEventHandler, useState } from "react";
 import Chart from "../Chart/Chart";
+import styles from "./FilePicker.module.css"
 
-function getInterpolation(arr: Uint8Array, maxOutputLength: number) {
-  // I want to make this effectively shrink the dataset
-  // by averaging the datapoints such that the output
-  // has length < maxOutputLength
-
-  // for now though I'll just do this
-  return Array.from(arr.subarray(0, maxOutputLength));
-
+interface Args {
+  onPick: (x: ArrayBuffer) => void;
 }
 
-export default function FilePicker() {
+export default function FilePicker( {onPick}: Args ) {
 
-  const [fileData, updateFileData] = useState<Uint8Array>();
+  const [fileData, updateFileData] = useState<ArrayBuffer>();
 
   const handleFileChange: ChangeEventHandler<HTMLInputElement> = async (event: ChangeEvent<HTMLInputElement>) => {
     // If for some reason the file is not found
@@ -25,21 +20,29 @@ export default function FilePicker() {
     const file: File = event.target.files[0];
 
     // If file is not a proper audio file
-    if (file.type != "audio/mpeg") {
-      alert("Please select a .mp3 audio file");
+    if (file.type != "audio/x-wav") {
+      console.error(`File was ${file.type}`);
+      alert("Please select a .wav audio file");
       return;
     }
-
+    
     const buffer = await file.arrayBuffer()
-    const uint8 = new Uint8Array(buffer)
 
-    updateFileData(uint8);
+    updateFileData(buffer);
+
+    console.error("NO LOADING ANIMATION");
+
+    onPick(buffer);
+
+    console.error("NO LOADING ANIMATION");
   }
 
   return (
-    <div>
-      <input type="file" accept=".mp3" onChange={handleFileChange}/>
-      <Chart data={fileData ? getInterpolation(fileData, 100) : []} />  
+    <div className="text-center">
+      <div className={styles["f-input-container"]}>
+        <input type="file" accept=".wav" onChange={handleFileChange} className={styles["f-input"]}/>
+      </div>
+      <Chart data={fileData} />  
     </div>
   );
 }
