@@ -33,13 +33,14 @@ const convertRawBufferToWaveform = (wavData: ArrayBuffer): number[] => {
 }
 
 export default function Chart({data} : {data: ArrayBuffer | undefined}) {
+  const [timeStamp, setTimeStamp] = useState(0);
 
   return <div>
     {data==undefined ? "" : 
       <div>
         <div className="text-center flex align-middle">
-          <AudioElement data={data} />
-          <LineGraph data={convertRawBufferToWaveform(data)} height={300} width={700}/>
+          <AudioElement data={data} timeStamp={timeStamp} setTimeStamp={setTimeStamp} />
+          <LineGraph timeStamp={timeStamp} data={convertRawBufferToWaveform(data)} height={300} width={700}/>
         </div>
       </div>
     }

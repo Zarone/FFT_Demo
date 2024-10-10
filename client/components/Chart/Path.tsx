@@ -5,7 +5,9 @@ export interface PathParameters {
   data: number[];
   height: number;
   width: number;
-  color?: string;
+  colorPlayed?: string;
+  colorUnplayed?: string;
+  timeStamp?: number;
 }
 
 // default min/max has size limit
@@ -26,7 +28,7 @@ const customMax = (arr: number[]): number => {
   return max;
 }
 
-export default function Path({data, height, width, color}: PathParameters) {
+export default function Path({data, height, width, colorPlayed, colorUnplayed, timeStamp}: PathParameters) {
   const dataMin = useRef(0);
   const dataMax = useRef(0);
 
@@ -41,21 +43,45 @@ export default function Path({data, height, width, color}: PathParameters) {
     return height - ( (y-min) / (max-min) * height);
   }
 
-  const [pathD, setPathD] = useState<string>("");
+  const [pathD, setPathD] = useState<string[]>([]);
 
   useEffect(() => {
     dataMin.current = customMin(data);
     dataMax.current = customMax(data);
 
-    let tempPathD = "M " + getSvgX(0) + " " + getSvgY(data[0]) + " ";
-    tempPathD += data.map((num, i) => {
-      return "L " + getSvgX(i) + " " + getSvgY(num) + " ";
-    });
+    const tempPathD = Array(1+data.length);
+    tempPathD[0] = "M " + getSvgX(0) + " " + getSvgY(data[0]) + " ";
+    for (let i = 1; i < data.length; i++) {
+      tempPathD[i] = "L " + getSvgX(i) + " " + getSvgY(data[i]) + " ";
+    }
     setPathD(tempPathD);
   }, [data])
 
+  if (pathD.length == 0) {
+    return "";
+  }
+
+  timeStamp = timeStamp ?? 1;
+  const playedLength = timeStamp*Math.round(data.length);
+
+  let path1 = ""; // played
+  let path2 = ""; //unplayed
+  if (playedLength == 0) { // if just started
+    path2 = pathD.slice(playedLength).join();
+    path2 = "M"+path2.slice(1);
+  } else if (playedLength >= data.length-1){ // if at end
+    path1 = pathD.slice(0, playedLength).join();
+  } else {
+    path1 = pathD.slice(0, playedLength).join();
+    path2 = pathD.slice(playedLength).join();
+    path2 = "M"+path2.slice(1);
+  }
+
   return (
-    <path className={styles["linechart-path"]} d={pathD} style={{stroke: color || "blue"}} />
+    <>
+      <path className={styles["linechart-path"]} d={path1} style={{stroke: colorPlayed || "red"}} />
+      <path className={styles["linechart-path"]} d={path2} style={{stroke: colorUnplayed || "blue"}} />
+    </>
   );
 
   

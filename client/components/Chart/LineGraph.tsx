@@ -11,11 +11,11 @@
 import styles from "./LineGraph.module.css"
 import Path, { PathParameters } from "./Path"
 
-export default function LineGraph({data, height, width, color}: PathParameters) {
+export default function LineGraph({data, height, width, colorPlayed, colorUnplayed, timeStamp}: PathParameters) {
 
   return <div>
     <svg height={height} width={width} className={styles["linechart-svg"]}>
-      <Path data={data} height={height} width={width} color={color}/>
+      <Path data={data} height={height} width={width} colorPlayed={colorPlayed} colorUnplayed={colorUnplayed} timeStamp={timeStamp}/>
     </svg>
   </div>
 }
