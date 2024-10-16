@@ -26,6 +26,7 @@ export default function FilePicker( {onPick, updateFileData}: Args ) {
     
     const buffer = await file.arrayBuffer()
 
+    console.log("Update File Data");
     updateFileData(buffer);
 
     console.error("NO LOADING ANIMATION");
