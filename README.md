@@ -13,14 +13,12 @@ npm run dev
 ```
 
 ### TODO
-- Minimum Viable Product
-  - Setup front end to get audio file data
-  - Send audio file data to backend and establish socket
-  - Process audio data in backend
-    - Split audio into its components
-  - Return audio components to front end
-    - Render audio components on front end once returned from backend
-  - Remerge selected audio components by sending to backend
-- Ideal Additions
-  - After front end recieves audio file, render the data from the audio file 
-    - Get data locally instead of sending it to backend if I can
+- Send audio file data to backend and establish socket
+- Process audio data in backend
+  - Split audio into its components
+- Return audio components to front end
+  - Render audio components on front end once returned from backend
+- Remerge selected audio components by sending to backend
+- Ideally:
+  - Time the amount of time it takes to run FFT
+  - Time the amount of time it takes to run DFT
