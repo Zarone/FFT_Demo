@@ -2,7 +2,7 @@
 
 import AudioElement from "../AudioElement/AudioElement";
 import LineGraph from "./LineGraph";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Dispatch, SetStateAction } from "react";
 
 const convertRawBufferToWaveform = (wavData: ArrayBuffer): number[] => {
   // Create a DataView to read the byte data
@@ -32,7 +32,13 @@ const convertRawBufferToWaveform = (wavData: ArrayBuffer): number[] => {
   return waveform;
 }
 
-export default function Chart({data} : {data: ArrayBuffer | undefined}) {
+interface ChartParams {
+  data: ArrayBuffer | undefined;
+  rendererScale: number;
+  setRendererScale: Dispatch<SetStateAction<number>>;
+}
+
+export default function Chart({data, rendererScale, setRendererScale} : ChartParams) {
   const [timeStamp, setTimeStamp] = useState(0);
   const [bufferData, setBufferData] = useState<number[]>([]);
 
@@ -50,7 +56,14 @@ export default function Chart({data} : {data: ArrayBuffer | undefined}) {
       <div>
         <div className="text-center flex align-middle justify-center">
           <AudioElement data={data} timeStamp={timeStamp} setTimeStamp={setTimeStamp} />
-          <LineGraph timeStamp={timeStamp} data={bufferData} height={300} width={700}/>
+          <LineGraph 
+            timeStamp={timeStamp} 
+            data={bufferData} 
+            height={300} 
+            width={700}
+            scale={rendererScale}
+            setScale={setRendererScale}
+          />
         </div>
       </div>
     }

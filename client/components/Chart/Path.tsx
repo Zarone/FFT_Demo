@@ -1,5 +1,5 @@
 import styles from "./LineGraph.module.css"
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, Dispatch, SetStateAction } from 'react';
 
 export interface PathParameters {
   data: number[];
@@ -8,6 +8,8 @@ export interface PathParameters {
   colorPlayed?: string;
   colorUnplayed?: string;
   timeStamp?: number;
+  scale: number;
+  setScale?: Dispatch<SetStateAction<number>>;
 }
 
 // default min/max has size limit
@@ -39,7 +41,7 @@ const getSvgY = (y: number, dataMin: number, dataMax: number, height: number): n
   return height - ( (y-min) / (max-min) * height);
 }
 
-export default function Path({data, height, width, colorPlayed, colorUnplayed, timeStamp}: PathParameters) {
+export default function Path({data, height, width, colorPlayed, colorUnplayed, timeStamp, scale}: PathParameters) {
   const dataMin = useRef(0);
   const dataMax = useRef(0);
 
@@ -57,7 +59,7 @@ export default function Path({data, height, width, colorPlayed, colorUnplayed, t
     const tempPathD = Array(1+data.length);
     tempPathD[0] = 
       "M " + 
-        getSvgX(0, dataLength, width) + 
+        getSvgX(0, dataLength, scale*width) + 
         " " + 
         getSvgY(data[0], dataMin.current, dataMax.current, height) + 
         " ";
@@ -65,14 +67,14 @@ export default function Path({data, height, width, colorPlayed, colorUnplayed, t
     for (let i = 1; i < data.length; i++) {
       tempPathD[i] = 
         "L " + 
-          getSvgX(i, dataLength, width) + 
+          getSvgX(i, dataLength, scale*width) + 
           " " + 
           getSvgY(data[i], dataMin.current, dataMax.current, height) + 
           " ";
     }
 
     setPathD(tempPathD.join());
-  }, [data, height, width])
+  }, [data, height, width, scale])
 
   if (!pathD || pathD.length == 0) {
     return "";
@@ -84,7 +86,7 @@ export default function Path({data, height, width, colorPlayed, colorUnplayed, t
     <>
       <defs>
         <clipPath id="clipPath">
-          <rect x="0" y="0" width={timeStamp*width} height={height}/>
+          <rect x="0" y="0" width={timeStamp*scale*width} height={height}/>
         </clipPath>
       </defs>
       <path 

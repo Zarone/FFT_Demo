@@ -8,14 +8,32 @@
 
 'use client';
 
+import { WheelEvent } from "react";
 import styles from "./LineGraph.module.css"
 import Path, { PathParameters } from "./Path"
 
-export default function LineGraph({data, height, width, colorPlayed, colorUnplayed, timeStamp}: PathParameters) {
+export default function LineGraph(
+  {data, height, width, colorPlayed, colorUnplayed, timeStamp, scale, setScale, offset}: PathParameters
+) {
+  const scroll = (e: WheelEvent<SVGSVGElement>) => {
+    if (!setScale) return;
+    console.log(`new scale: ${scale+e.deltaY/1000}`);
+    setScale(Math.max(0.5, scale+e.deltaY/1000));
+    e.preventDefault();
+    e.stopPropagation();
+  }
 
   return <div>
-    <svg height={height} width={width} className={styles["linechart-svg"]}>
-      <Path data={data} height={height} width={width} colorPlayed={colorPlayed} colorUnplayed={colorUnplayed} timeStamp={timeStamp}/>
+    <svg onWheel={scroll} height={height} width={width} className={styles["linechart-svg"]}>
+      <Path 
+        data={data} 
+        height={height} 
+        width={width} 
+        colorPlayed={colorPlayed} 
+        colorUnplayed={colorUnplayed} 
+        timeStamp={timeStamp}
+        scale={scale}
+      />
     </svg>
   </div>
 }

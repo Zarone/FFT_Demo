@@ -15,6 +15,9 @@ async function sleep(ms) {
 export default function Home() {
   const [fileData, updateFileData] = useState<ArrayBuffer>();
 
+  // changes how all of the charts render
+  const [rendererScale, setRendererScale] = useState<number>(2);
+
   const testFunction = async () => {
     await sleep(3000);
     console.log("FINISHED ASYNC FUNCTION");
@@ -23,7 +26,11 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <FilePicker updateFileData={updateFileData} onPick={testFunction}/>
-      <Chart data={fileData} />  
+      <Chart 
+        data={fileData} 
+        rendererScale={rendererScale} 
+        setRendererScale={setRendererScale}
+      />  
     </div>
   );
 }
