@@ -1,5 +1,11 @@
-let {method} = require("./engine/engine");
+let {method, zeroArrayBuffer, transformWavFileBuffer} = require("./engine/engine");
 console.log(method([1, 2, 3]));
+console.log(zeroArrayBuffer(
+  new Uint16Array([1, 2, 3, 4, 5, 6, 7]).buffer
+));
+console.log(transformWavFileBuffer(
+  new Uint16Array([1, 2, 3, 4, 5, 6, 7]).buffer
+));
 
 let express = require("express");
 const app = express();
@@ -9,7 +15,7 @@ app.set("port", 3001);
 
 const whitelist = ["http://localhost:3000"]
 const corsOptions = {
-  origin: function (origin: any, callback: Function) {
+  origin: (origin: string, callback: (err: Error | null, origin?: string|boolean) => void) => {
     if (!origin || whitelist.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
@@ -27,18 +33,15 @@ let io = require("socket.io")(http, {
   credentials: true,
 });
 
-// simple '/' endpoint sending a Hello World
-// response
-app.get("/", (_: any, res: any) => {
-  res.send("hello world");
-});
-
 // whenever a user connects on port 3000 via
 // a websocket, log that a user has connected
-io.on("connection", function(_: any) {
+io.on("connection", (socket: any) => {
   console.log("a user connected");
+  socket.on("dataTransfer", (data: ArrayBuffer)=>{
+    console.log("dataTransfer", data);
+  })
 });
 
-const server = http.listen(3001, function() {
+http.listen(3001, function() {
   console.log("listening on *:3001");
 });
