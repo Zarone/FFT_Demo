@@ -124,7 +124,7 @@ namespace demo {
     int16_t* arr = v8ArrayToData(localArr);
     std::size_t len = localArr->ByteLength()/2; // divide by 2 because it's int16
 
-    int16_t** response = transformWAVData(arr);
+    int16_t** response = transformWAVData(arr, len);
     
     args.GetReturnValue().Set(arrToV8ArrayOfBuffers(isolate, response, len, 1));
     

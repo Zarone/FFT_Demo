@@ -10,12 +10,17 @@ import SocketHandler from "@/components/SocketHandler/SocketHandler";
 
 export default function Home() {
   const [fileData, updateFileData] = useState<ArrayBuffer>();
+  const [recievedData, changeRecievedData] = useState<ArrayBuffer[]>([]);
 
   // changes how all of the charts render
   const [rendererScale, setRendererScale] = useState<number>(1);
 
   const sendData = async (buffer: ArrayBuffer) => {
+    console.log(`Emitted Data Transfer with Buffer of Size ${buffer.byteLength}`);
     socket.emit("dataTransfer", buffer); 
+    console.group("Printing Header Info");
+    console.log(new Uint16Array(buffer.slice(0, 44)));
+    console.groupEnd();
   }
 
   return (
@@ -25,8 +30,23 @@ export default function Home() {
         data={fileData} 
         rendererScale={rendererScale} 
         setRendererScale={setRendererScale}
-      />  
-      <SocketHandler socket={socket} />
+      />
+      <SocketHandler 
+        socket={socket} 
+        changeReceivedData={changeRecievedData}
+      />
+      { 
+        recievedData.map((arrData: ArrayBuffer, index: number)=>{
+          console.log(index);
+          console.log(arrData);
+          return <Chart 
+            key={index}
+            data={arrData} 
+            rendererScale={rendererScale} 
+            setRendererScale={setRendererScale}
+          />
+        }) 
+      }
     </div>
   );
 }

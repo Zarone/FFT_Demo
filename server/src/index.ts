@@ -1,11 +1,4 @@
 let {method, zeroArrayBuffer, transformWavFileBuffer} = require("./engine/engine");
-console.log(method([1, 2, 3]));
-console.log(zeroArrayBuffer(
-  new Uint16Array([1, 2, 3, 4, 5, 6, 7]).buffer
-));
-console.log(transformWavFileBuffer(
-  new Uint16Array([1, 2, 3, 4, 5, 6, 7]).buffer
-));
 
 let express = require("express");
 const app = express();
@@ -36,9 +29,13 @@ let io = require("socket.io")(http, {
 // whenever a user connects on port 3000 via
 // a websocket, log that a user has connected
 io.on("connection", (socket: any) => {
-  console.log("a user connected");
-  socket.on("dataTransfer", (data: ArrayBuffer)=>{
-    console.log("dataTransfer", data);
+  console.log("A user connected");
+  socket.on("dataTransfer", (data: Uint8Array)=>{
+    console.log("Data Transfer");
+    console.group("Printing Header Info");
+    console.log(new Uint16Array(data.slice(0,44)));
+    console.groupEnd();
+    socket.emit("decomposedTransfer", transformWavFileBuffer(data.buffer));
   })
 });
 
