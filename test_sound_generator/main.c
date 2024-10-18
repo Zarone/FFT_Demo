@@ -42,21 +42,17 @@ const float MIDDLE_C = 256.00;
 
 const int header_length = sizeof(struct wav_header);
 
-// expects output filename, frequency, and duration
+// expects output filename, duration, and frequencies
 int main(int argc, char** args)
 {
-  if (argc != 4) {
-    printf("Expected filename, frequency, and duration for arguments\n");
+  if (argc < 4) {
+    printf("Expected filename, duration, and frequencies for arguments\n");
     return -1;
   }
   char* end;
 
   char* filename = args[1];
-  double frequency = strtod(args[2], &end);
-  double duration_seconds = strtod(args[3], &end);
-
-  printf("%f\n", frequency);
-  printf("%f\n", duration_seconds);
+  double duration_seconds = strtod(args[2], &end);
 
   const int sample_rate = 8000;
   const int buffer_size = (int)((double)sample_rate * duration_seconds);
@@ -76,14 +72,20 @@ int main(int argc, char** args)
   wavh.bytes_per_samp = wavh.bits_per_samp / 8 * wavh.num_chans;
 
   for (int i = 0; i < buffer_size; i++) {
-    buffer[i] = (short int)((cos((2 * M_PI * frequency * i) / sample_rate) * 1000))
-      + (short int)((cos((2 * M_PI * 137.0 * i) / sample_rate) * 1000));
+    buffer[i] = 0;
+    for (int j = 3; j < argc; j++) {
+      double frequency = strtod(args[j], &end);
+      buffer[i] += (short int)((cos((2 * M_PI * frequency * i) / sample_rate) * 2000));
+    }
   }
 
   wavh.dlength = buffer_size * wavh.bytes_per_samp;
   wavh.flength = wavh.dlength + header_length;
 
-  FILE *fp = fopen(args[1], "w");
+  char filename_path[64];
+  sprintf(filename_path, "./sound_files/%s", args[1]);
+
+  FILE *fp = fopen(filename_path, "w");
   fwrite(&wavh, 1, header_length, fp);
   fwrite(buffer, 2, buffer_size, fp);
 }

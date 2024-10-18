@@ -7,6 +7,19 @@ interface SocketHandlerParams {
   changeReceivedData: Dispatch<SetStateAction<ArrayBuffer[]>>;
 }
 
+
+const sendData = async (socket: Socket, buffer: ArrayBuffer) => {
+  console.log(`Emitted Data Transfer with Buffer of Size ${buffer.byteLength}`);
+  socket.emit("dataTransfer", new Uint8Array(buffer)); 
+  console.group("Printing Header Info");
+  console.log(new Uint8Array(buffer));
+  console.groupEnd();
+}
+
+export const sendDataToSocket = (socket: Socket) => {
+  return (buf: ArrayBuffer) => sendData(socket, buf);
+}
+
 export default function SocketHandler({socket, changeReceivedData}: SocketHandlerParams) {
   const [isConnected, setIsConnected] = useState(socket.connected);
 
@@ -22,6 +35,15 @@ export default function SocketHandler({socket, changeReceivedData}: SocketHandle
     function onDecomposedTransfer(value: ArrayBuffer[]) {
       console.log("Received value from onDecomposedTransfer");
       changeReceivedData(value);
+
+      // CODE TO PRINT FREQUENCIES
+      //const threshold = 1000;
+      //const temp = (new Uint16Array(value[0]));
+      //for (let i = 22; i < temp.length; i++) {
+        //if (temp[i] > threshold)
+          //console.log(`index: ${i-22}, value: ${temp[i]}, freq: ${(i-22)*8000/(temp.length-22)}`);
+      //}
+
     }
 
     socket.on('connect', onConnect);
@@ -36,7 +58,6 @@ export default function SocketHandler({socket, changeReceivedData}: SocketHandle
   }, []);
 
   return <div>
-    <button onClick={()=>{socket.connect();}}>Connect</button>
-    <p>Connected: {isConnected ? "Connected" : "Not Connected"}</p>
+    <p className="text-center" >Connected: {isConnected ? "Connected" : "Not Connected"}</p>
   </div>
 }

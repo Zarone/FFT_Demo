@@ -1,4 +1,4 @@
-let {method, zeroArrayBuffer, transformWavFileBuffer} = require("./engine/engine");
+let {transformWavFileBuffer} = require("./engine/engine");
 
 let express = require("express");
 const app = express();
@@ -25,37 +25,31 @@ let io = require("socket.io")(http, {
   methods: ['GET', 'POST'],
   credentials: true,
   transports: ['websocket'],
+  pingTimeout: 60000,
+  pingInterval: 25000,
 });
 
 // whenever a user connects on port 3000 via
 // a websocket, log that a user has connected
 io.on("connection", (socket: any) => {
-  socket.binaryType = 'arraybuffer';
-  console.log("A user connected");
   socket.on("dataTransfer", (data: Uint8Array)=>{
 
     console.log("Data Transfer");
 
-    console.group("Printing Data Info");
-    console.log("Received Data");
-    console.log(data);
-    console.log(Object.prototype.toString.call(data));
-    console.groupEnd();
-
     // This is necessary because the actual buffer can start earlier than the uint8array
-    const cutBuffer = data.buffer.slice(data.byteOffset, data.byteOffset+data.byteLength);
+    const cutBuffer: ArrayBuffer = data.buffer.slice(data.byteOffset, data.byteOffset+data.byteLength);
 
-    console.group("Printing Buffer Info");
-    console.log(cutBuffer);
+    console.group("Receive: Printing Header Info");
+    console.log(cutBuffer.slice(0, 44));
     console.groupEnd();
 
-    console.log("Emitting Data");
-    console.group("Printing Header Info");
+    console.group("Emit: Printing Header Info");
     const buf: ArrayBuffer[] = transformWavFileBuffer(cutBuffer);
     console.log(buf[0]?.slice(0,44));
     console.groupEnd();
 
     socket.emit("decomposedTransfer", buf );
+
   })
 });
 

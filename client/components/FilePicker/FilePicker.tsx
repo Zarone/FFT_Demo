@@ -27,18 +27,15 @@ export default function FilePicker( {onPick, updateFileData}: Args ) {
     const buffer: ArrayBuffer = await file.arrayBuffer()
 
     console.log("Update File Data");
-    console.log(`File was ${buffer.byteLength} bytes`);
     console.group("Printing Header Info");
     console.log(new Uint16Array(buffer.slice(0, 44)));
     console.groupEnd();
 
     updateFileData(buffer);
 
-    console.error("NO LOADING ANIMATION");
+    console.error("TODO: ADD LOADING ANIMATION");
 
     onPick(buffer);
-
-    console.error("NO LOADING ANIMATION");
   }
 
   return (

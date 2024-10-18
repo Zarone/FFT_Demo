@@ -38,3 +38,13 @@ std::vector<std::vector<int16_t>> transformAmplitudeData(const std::vector<int16
 * @brief Just a simple DFT
 */
 std::vector<std::complex<double>> DFT(const std::vector<int16_t>& data);
+
+
+/**
+*
+*
+*
+*
+* @brief Just a simple inverse DFT
+*/
+std::vector<int16_t> InverseDFT(const std::vector<std::complex<double>>& data);
