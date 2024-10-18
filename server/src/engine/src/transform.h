@@ -1,6 +1,12 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
+#include <complex>
+
+// 44 header bytes  / 2
+// We divide by two because we use int16
+const size_t HEADER_OFFSET = 22;
 
 /**
   *
@@ -11,7 +17,7 @@
   * @param length The number of elements in data
   *
   */
-int16_t** transformWAVData(int16_t* data, size_t length);
+std::vector<std::vector<int16_t>> transformWAVData(const std::vector<int16_t>& data);
 
 
 /**
@@ -24,4 +30,11 @@ int16_t** transformWAVData(int16_t* data, size_t length);
 * @param numElements A pointer to store the number of elements in the returned array
 *
 */
-int16_t** transformAmplitudeData(int16_t* data, size_t length, int* numElements);
+std::vector<std::vector<int16_t>> transformAmplitudeData(const std::vector<int16_t>& data, int& numElements);
+
+/**
+*
+*
+* @brief Just a simple DFT
+*/
+std::vector<std::complex<double>> DFT(const std::vector<int16_t>& data);

@@ -21,7 +21,6 @@ export default function SocketHandler({socket, changeReceivedData}: SocketHandle
 
     function onDecomposedTransfer(value: ArrayBuffer[]) {
       console.log("Received value from onDecomposedTransfer");
-      console.log(value);
       changeReceivedData(value);
     }
 

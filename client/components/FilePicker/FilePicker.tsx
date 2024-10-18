@@ -31,6 +31,7 @@ export default function FilePicker( {onPick, updateFileData}: Args ) {
     console.group("Printing Header Info");
     console.log(new Uint16Array(buffer.slice(0, 44)));
     console.groupEnd();
+
     updateFileData(buffer);
 
     console.error("NO LOADING ANIMATION");

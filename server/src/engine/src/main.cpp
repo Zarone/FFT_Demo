@@ -23,8 +23,9 @@ namespace demo {
   }
 
   // Helper function to convert a V8 ArrayBuffer to a C++ pointer
-  int16_t* v8ArrayToData(Local<ArrayBuffer> array) {
-    return (int16_t*)array->GetBackingStore()->Data();
+  std::vector<int16_t> v8ArrayToData(Local<ArrayBuffer> array, int len) {
+    int16_t* raw = static_cast<int16_t*>(array->GetBackingStore()->Data());
+    return std::vector<int16_t>(raw, raw+len);
   }
 
   // Helper function to convert a C++ vector of integers back to a V8 array
@@ -37,7 +38,7 @@ namespace demo {
   }
 
   // Helper function to convert a C++ int16 array to a V8 array
-  Local<ArrayBuffer> arrToV8Array(Isolate* isolate, int16_t* arr, std::size_t len) {
+  Local<ArrayBuffer> arrToV8Array(Isolate* isolate, const std::vector<int16_t>& arr, std::size_t len) {
     Local<ArrayBuffer> v8Array = ArrayBuffer::New(isolate, len);
     for (size_t i = 0; i < len; ++i) {
       v8Array->Set(isolate->GetCurrentContext(), i, Integer::New(isolate, arr[i])).FromJust();
@@ -46,20 +47,23 @@ namespace demo {
   }
 
   // Helper function to convert a C++ int16 array to a V8 array of buffers
-  Local<Array> arrToV8ArrayOfBuffers(Isolate* isolate, int16_t** arr, std::size_t bufferLen, std::size_t arrLen) {
+  Local<Array> arrToV8ArrayOfBuffers(Isolate* isolate, std::vector<std::vector<int16_t>> arr, std::size_t arrLen) {
     Local<Array> v8Array = Array::New(isolate, arrLen);
     for (std::size_t i = 0; i < arrLen; ++i) {
 
       // Calculate the byte size of the int16_t array
-      size_t byte_length = bufferLen * sizeof(int16_t);
+      size_t byte_length = arr[i].size() * sizeof(int16_t);
       
-      // Create an external backing store that doesn't copy the data
+      // Create an external backing store
       std::unique_ptr<v8::BackingStore> backing_store = v8::ArrayBuffer::NewBackingStore(
-          arr[i], 
+          std::malloc(byte_length), 
           byte_length, 
-          v8::BackingStore::EmptyDeleter,  // No deleter because we don't want to free the memory
+          [](void* data, size_t, void*) { std::free(data); }, 
           nullptr  // No user data
       );
+
+      // Copy the data from arr[i].data() to the new backing store
+      std::memcpy(backing_store->Data(), arr[i].data(), byte_length);
 
       Local<ArrayBuffer> buffer = ArrayBuffer::New(isolate, std::move(backing_store));
       v8Array->Set(isolate->GetCurrentContext(), i, buffer).FromJust();
@@ -100,7 +104,7 @@ namespace demo {
     }
     
     Local<ArrayBuffer> localArr = Local<ArrayBuffer>::Cast(args[0]);
-    int16_t* arr = v8ArrayToData(localArr);
+    std::vector<int16_t> arr = v8ArrayToData(localArr, localArr->ByteLength()/2);
     std::size_t len = localArr->ByteLength()/2; // divide by 2 because it's int16
 
     for (std::size_t i = 0; i < len; i++) {
@@ -121,12 +125,13 @@ namespace demo {
     }
     
     Local<ArrayBuffer> localArr = Local<ArrayBuffer>::Cast(args[0]);
-    int16_t* arr = v8ArrayToData(localArr);
     std::size_t len = localArr->ByteLength()/2; // divide by 2 because it's int16
 
-    int16_t** response = transformWAVData(arr, len);
+    std::vector<int16_t> arr = v8ArrayToData(localArr, len);
+
+    std::vector<std::vector<int16_t>> response = transformWAVData(arr);
     
-    args.GetReturnValue().Set(arrToV8ArrayOfBuffers(isolate, response, len, 1));
+    args.GetReturnValue().Set(arrToV8ArrayOfBuffers(isolate, response, 1));
     
   }
 

@@ -17,9 +17,9 @@ export default function Home() {
 
   const sendData = async (buffer: ArrayBuffer) => {
     console.log(`Emitted Data Transfer with Buffer of Size ${buffer.byteLength}`);
-    socket.emit("dataTransfer", buffer); 
+    socket.emit("dataTransfer", new Uint8Array(buffer)); 
     console.group("Printing Header Info");
-    console.log(new Uint16Array(buffer.slice(0, 44)));
+    console.log(new Uint8Array(buffer));
     console.groupEnd();
   }
 
