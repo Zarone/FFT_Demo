@@ -1,4 +1,5 @@
 #include <node.h>
+#include <cstring>
 #include "transform.h"
 
 namespace demo {
@@ -19,6 +20,7 @@ namespace demo {
     int16_t* raw = static_cast<int16_t*>(array->GetBackingStore()->Data());
     return vector<int16_t>(raw, raw+len);
   }
+
 
   // Helper function to convert a C++ vector<int16_t> to a V8 array of buffers
   Local<Array> arrToV8ArrayOfBuffers(Isolate* isolate, const vector<vector<int16_t>>& arr) {

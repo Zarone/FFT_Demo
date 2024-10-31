@@ -1,11 +1,13 @@
 # Use an official Node.js runtime as the base image
-FROM node:22
+FROM node:23
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy package.json and package-lock.json into the working directory
 COPY package*.json ./
+
+ENV CXX g++
 
 # Install dependencies
 RUN npm install
