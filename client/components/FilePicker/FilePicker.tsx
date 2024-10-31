@@ -1,12 +1,13 @@
 import { ChangeEvent, ChangeEventHandler, useState, Dispatch, SetStateAction } from "react";
-import styles from "./FilePicker.module.css"
+import styles from "./FilePicker.module.css";
+import { DataHandler } from "../DataHandler/DataHandler";
 
 interface Args {
-  onPick: (x: ArrayBuffer) => void;
+  handler: DataHandler;
   updateFileData: Dispatch<SetStateAction<ArrayBuffer|undefined>>;
 }
 
-export default function FilePicker( {onPick, updateFileData}: Args ) {
+export default function FilePicker( {handler, updateFileData}: Args ) {
 
   const handleFileChange: ChangeEventHandler<HTMLInputElement> = async (event: ChangeEvent<HTMLInputElement>) => {
     // If for some reason the file is not found
@@ -35,7 +36,7 @@ export default function FilePicker( {onPick, updateFileData}: Args ) {
 
     console.error("TODO: ADD LOADING ANIMATION");
 
-    onPick(buffer);
+    handler.sendData(buffer);
   }
 
   return (
