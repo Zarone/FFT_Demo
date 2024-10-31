@@ -33,6 +33,17 @@ std::vector<std::vector<int16_t>> transformWAVData(const std::vector<int16_t>& d
 std::vector<std::vector<int16_t>> transformAmplitudeData(const std::vector<int16_t>& data, int& numElements);
 
 /**
+ *
+ *
+ * @brief A function used to preprocess the input data to better find frequencies
+ *
+ * @param index
+ * @param length
+ *
+ */
+double windowingFunction(double index, double length);
+
+/**
 *
 *
 * @brief Just a simple DFT

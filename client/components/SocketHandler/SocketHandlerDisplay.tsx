@@ -9,10 +9,8 @@ export default function SocketHandlerDisplay({socketHandler}: SocketHandlerDispl
   const [isConnected, setIsConnected] = useState(socketHandler.isConnected());
 
   useEffect(() => {
-    const callback: ()=>void = socketHandler.setConnectionHandler(setIsConnected);
-    return () => {
-      callback();
-    };
+    setIsConnected(socketHandler.isConnected());
+    return socketHandler.setConnectionHandler(setIsConnected);
   }, [socketHandler]);
 
   return <div>

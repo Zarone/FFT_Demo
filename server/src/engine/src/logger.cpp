@@ -17,8 +17,15 @@ void empty_file(const std::string& name) {
   my_file.close();
 }
 
-
 void file_logger(const std::string& name, const std::string& content) {
+  if (!DEBUG_MODE) return;
+  std::ofstream my_file;
+  my_file.open(name, std::ofstream::app);
+  my_file << content << std::endl;
+  my_file.close();
+}
+
+void file_logger(const std::string& name, int16_t content) {
   if (!DEBUG_MODE) return;
   std::ofstream my_file;
   my_file.open(name, std::ofstream::app);

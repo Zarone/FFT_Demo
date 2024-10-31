@@ -33,7 +33,7 @@ const convertRawBufferToWaveform = (wavData: ArrayBuffer): number[] => {
 }
 
 interface ChartParams {
-  data: ArrayBuffer | undefined;
+  data: ArrayBuffer;
   rendererScale: number;
   setRendererScale: Dispatch<SetStateAction<number>>;
 }
@@ -43,7 +43,7 @@ export default function Chart({data, rendererScale, setRendererScale} : ChartPar
   const [bufferData, setBufferData] = useState<number[]>([]);
 
   useEffect(()=>{
-    if (!data) {
+    if (!data || data.byteLength == 0) {
       setBufferData([]);
       return;
     }
@@ -52,7 +52,7 @@ export default function Chart({data, rendererScale, setRendererScale} : ChartPar
   }, [data])
 
   return <div>
-    {data==undefined ? "" : 
+    {data.byteLength==0 ? "" : 
       <div>
         <div className="text-center flex align-middle justify-center">
           <AudioElement data={data} timeStamp={timeStamp} setTimeStamp={setTimeStamp} />

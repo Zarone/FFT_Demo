@@ -8,7 +8,7 @@
         ],
       },
       "target_name": "engine",
-      "sources": [ "./src/main.cpp", "./src/transform.h", "./src/transform.cpp", "./src/logger.cpp", "./src/logger.h" ],
+      "sources": [ "./src/main.cpp", "./src/transform.h", "./src/transform.cpp", "./src/logger.h", "./src/logger.cpp" ],
     }
   ]
 }

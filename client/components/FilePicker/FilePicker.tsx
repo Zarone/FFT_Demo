@@ -4,7 +4,7 @@ import { DataHandler } from "../DataHandler/DataHandler";
 
 interface Args {
   handler: DataHandler;
-  updateFileData: Dispatch<SetStateAction<ArrayBuffer|undefined>>;
+  updateFileData: Dispatch<SetStateAction<ArrayBuffer>>;
 }
 
 export default function FilePicker( {handler, updateFileData}: Args ) {

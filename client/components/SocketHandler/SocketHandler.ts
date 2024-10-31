@@ -5,8 +5,6 @@ import { DataHandler } from '../DataHandler/DataHandler';
 // "undefined" means the URL will be computed from the `window.location` object
 const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:3001';
 
-
-
 export class SocketHandler implements DataHandler {
   socket: Socket;
 
@@ -20,7 +18,6 @@ export class SocketHandler implements DataHandler {
   }
 
   private setupSocket = (changeReceivedData: Dispatch<SetStateAction<ArrayBuffer[]>>) => {
-
     function onDecomposedTransfer(value: ArrayBuffer[]) {
       console.log("Received value from onDecomposedTransfer");
       changeReceivedData(value);
@@ -34,7 +31,6 @@ export class SocketHandler implements DataHandler {
         //if (temp[i] > threshold)
           //console.log(`index: ${i-22}, value: ${temp[i]}, freq: ${(i-22)*8000/(temp.length-22)}`);
       //}
-
     }
 
     this.socket.on('decomposedTransfer', onDecomposedTransfer);

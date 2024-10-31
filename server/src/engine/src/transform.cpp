@@ -49,25 +49,20 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
 
   vector<std::complex<double>> frequencyData = DFT(data);
   
-  //empty_file("./logs/DFT.log");
+  empty_file("./logs/DFT.log");
   for (size_t i = HEADER_OFFSET; i < len; i++) {
     value[0][i] = (int16_t) hypot(frequencyData[i-HEADER_OFFSET].imag(), frequencyData[i-HEADER_OFFSET].real());
-    //file_logger("./logs/DFT.log", std::to_string(value[0][i])); 
+    file_logger("./logs/DFT.log", value[0][i]); 
   }
 
-  //empty_file("./logs/InverseDFT.log");
+  empty_file("./logs/InverseDFT.log");
   vector<int16_t> recreation = InverseDFT(frequencyData);
   for (size_t i = HEADER_OFFSET; i < len; i++) {
     value[1][i] = recreation[i-HEADER_OFFSET];
-    //file_logger("./logs/InverseDFT.log", std::to_string(value[1][i])); 
+    file_logger("./logs/InverseDFT.log", value[1][i]); 
   }
   
   return value;
-}
-
-double windowingFunction(double index, double length) {
-  // Hamming Window
-  return 0.54 - 0.46 * std::cos(2 * M_PI * index / (length-1));
 }
 
 vector<std::complex<double>> DFT(const vector<int16_t>& data) {
@@ -100,7 +95,6 @@ vector<int16_t> InverseDFT(const vector<std::complex<double>>& data) {
 
   vector<int16_t> output(len);
 
-  //empty_file("./logs/I_DFT_processing.log");
   for (size_t i = 0; i < len; i++) {
     double sum = 0;
     for (size_t j = 0; j < len; j++) {
@@ -109,10 +103,15 @@ vector<int16_t> InverseDFT(const vector<std::complex<double>>& data) {
       );
       std::complex<double> x_t = (data[j] * scale);
       sum += (double)(x_t.real());
-      //file_logger("./logs/I_DFT_processing.log", std::to_string(sum)); 
     }
     output[i] = sum/((double)len)/windowingFunction(i, len);
   }
 
   return output;
 }
+
+double windowingFunction(double index, double length) {
+  // Hamming Window
+  return 0.54 - 0.46 * std::cos(2 * M_PI * index / (length-1));
+}
+
