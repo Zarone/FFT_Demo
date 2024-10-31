@@ -25,6 +25,8 @@ export class SocketHandler implements DataHandler {
       console.log("Received value from onDecomposedTransfer");
       changeReceivedData(value);
 
+      console.log(new Int16Array(value[0]));
+      console.log(new Int16Array(value[1]));
       // CODE TO PRINT FREQUENCIES
       //const threshold = 1000;
       //const temp = (new Uint16Array(value[0]));

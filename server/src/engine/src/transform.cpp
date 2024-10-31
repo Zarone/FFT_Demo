@@ -4,6 +4,8 @@
 #include <iostream>
 
 #include "transform.h"
+#include "logger.h"
+
 using std::vector;
 
 vector<vector<int16_t>> transformWAVData(const vector<int16_t>& data) {
@@ -47,13 +49,17 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
 
   vector<std::complex<double>> frequencyData = DFT(data);
   
+  //empty_file("./logs/DFT.log");
   for (size_t i = HEADER_OFFSET; i < len; i++) {
     value[0][i] = (int16_t) hypot(frequencyData[i-HEADER_OFFSET].imag(), frequencyData[i-HEADER_OFFSET].real());
+    //file_logger("./logs/DFT.log", std::to_string(value[0][i])); 
   }
 
+  //empty_file("./logs/InverseDFT.log");
   vector<int16_t> recreation = InverseDFT(frequencyData);
   for (size_t i = HEADER_OFFSET; i < len; i++) {
     value[1][i] = recreation[i-HEADER_OFFSET];
+    //file_logger("./logs/InverseDFT.log", std::to_string(value[1][i])); 
   }
   
   return value;
@@ -94,15 +100,18 @@ vector<int16_t> InverseDFT(const vector<std::complex<double>>& data) {
 
   vector<int16_t> output(len);
 
+  //empty_file("./logs/I_DFT_processing.log");
   for (size_t i = 0; i < len; i++) {
     double sum = 0;
     for (size_t j = 0; j < len; j++) {
-      std::complex<double> x_t = (data[j] * exp(
+      std::complex<double> scale = exp(
         std::complex<double>(0.0, i*j*TWO_PI_OVER_LEN) 
-      ));
-      sum += (int16_t)(x_t.real());
+      );
+      std::complex<double> x_t = (data[j] * scale);
+      sum += (double)(x_t.real());
+      //file_logger("./logs/I_DFT_processing.log", std::to_string(sum)); 
     }
-    output[i] = sum/len/windowingFunction(i, len);
+    output[i] = sum/((double)len)/windowingFunction(i, len);
   }
 
   return output;
