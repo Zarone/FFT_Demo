@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <cstdio>
 #include <vector>
@@ -44,14 +45,10 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
   auto start = std::chrono::high_resolution_clock::now();
 
   numElements = 2;
-  size_t len = data.size();
+  const size_t len = data.size();
 
   //vector<vector<int16_t>> value(numElements, vector<int16_t>(data.size()));
-  vector<vector<int16_t>> value(numElements, vector<int16_t>(HEADER_OFFSET));
-
-  //for (size_t i = 0; i<HEADER_OFFSET; i++) {
-    //value[0][i] = 0;
-  //}
+  vector<vector<int16_t>> value(numElements);
 
   vector<int16_t> stripped_data = vector<int16_t>(data.begin()+HEADER_OFFSET, data.end());
 
@@ -64,24 +61,30 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
   //}
   
   vector<complex<double>> frequencyData = FFT_padding(stripped_data);
-  len = frequencyData.size() + HEADER_OFFSET;
-  value[0] = vector<int16_t>(len);
+  size_t freq_len = frequencyData.size() + HEADER_OFFSET;
+  value[0] = vector<int16_t>(std::max(freq_len, len));
   
   empty_file("./logs/FFTp.log");
-  for (size_t i = HEADER_OFFSET; i < len; i++) {
+  for (size_t i = HEADER_OFFSET; i < freq_len; i++) {
     value[0][i] = (int16_t) hypot(frequencyData[i-HEADER_OFFSET].imag(), frequencyData[i-HEADER_OFFSET].real());
     file_logger("./logs/FFTp.log", value[0][i]); 
   }
+  for (size_t i = freq_len; i < len; i++) {
+    value[0][i] = 0;
+  }
 
 
-  vector<int16_t> recreation = InverseDFT(frequencyData);
-  len = recreation.size() + HEADER_OFFSET;
+  vector<int16_t> recreation = InverseDFT(frequencyData, false);
+  size_t rec_len = recreation.size() + HEADER_OFFSET;
   value[1] = vector<int16_t>(len);
 
   empty_file("./logs/InverseDFT.log");
-  for (size_t i = HEADER_OFFSET; i < len; i++) {
+  for (size_t i = HEADER_OFFSET; i < std::min(rec_len, len); i++) {
     value[1][i] = recreation[i-HEADER_OFFSET];
     file_logger("./logs/InverseDFT.log", value[1][i]); 
+  }
+  for (size_t i = rec_len; i < len; ++i) {
+    value[1][i] = 0;
   }
 
   //vector<int16_t> recreation = IFFT_padding(frequencyData);
@@ -151,7 +154,8 @@ vector<complex<double>> FFT_padding(const vector<int16_t>& data) {
   while (next_radix_2 < len) next_radix_2 <<= 1; // Round up to the next power of 2
 
   /*   Zero pad   */
-  /*
+  /**/
+  complex<double> raw_data[next_radix_2];
   vector<complex<double>> output(next_radix_2);
   for (size_t i = 0; i < len; ++i) {
     raw_data[i] = data[i];
@@ -159,17 +163,17 @@ vector<complex<double>> FFT_padding(const vector<int16_t>& data) {
   for (size_t i = len; i < next_radix_2; ++i) {
     raw_data[i] = 0;
   }
-  */
+  /**/
 
   /*   Remove Elements   */ 
-  /**/
+  /*
   next_radix_2/=2;
   vector<complex<double>> output(next_radix_2);
   complex<double> raw_data[next_radix_2];
   for (size_t i = 0; i < next_radix_2; ++i) {
     raw_data[i] = data[i];
   }
-  /**/
+  */
 
   raw_FFT_padding(raw_data, next_radix_2);
 
@@ -180,7 +184,7 @@ vector<complex<double>> FFT_padding(const vector<int16_t>& data) {
   return output;
 }
 
-vector<complex<double>> DFT(const vector<int16_t>& data) {
+vector<complex<double>> DFT(const vector<int16_t>& data, bool windowed) {
   size_t len = data.size();
   const double NEGATIVE_TWO_PI_OVER_LEN = -2*M_PI/len;
 
@@ -192,7 +196,7 @@ vector<complex<double>> DFT(const vector<int16_t>& data) {
       double dataValue = static_cast<double>(data[j]);
       
       // improves frequency resolution sometimes
-      dataValue *= windowingFunction(j, len);
+      if (windowed) dataValue *= windowingFunction(j, len);
 
       sum += static_cast<double>(dataValue) * exp(
         complex<double>(0.0, i*j*NEGATIVE_TWO_PI_OVER_LEN) 
@@ -204,7 +208,7 @@ vector<complex<double>> DFT(const vector<int16_t>& data) {
   return output;
 }
 
-vector<int16_t> InverseDFT(const vector<complex<double>>& data) {
+vector<int16_t> InverseDFT(const vector<complex<double>>& data, bool windowed) {
   size_t len = data.size();
   const double TWO_PI_OVER_LEN = 2*M_PI/len;
 
@@ -219,7 +223,8 @@ vector<int16_t> InverseDFT(const vector<complex<double>>& data) {
       complex<double> x_t = (data[j] * scale);
       sum += (double)(x_t.real());
     }
-    output[i] = sum/((double)len)/windowingFunction(i, len);
+    output[i] = sum/((double)len);
+    if (windowed) output[i] /= windowingFunction(i, len);
   }
 
   return output;
