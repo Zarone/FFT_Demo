@@ -50,6 +50,12 @@ double windowingFunction(double index, double length);
 */
 std::vector<std::complex<double>> DFT(const std::vector<int16_t>& data);
 
+/**
+*
+*
+* @brief The actual FFT algorithm (using zero padding)
+*/
+std::vector<std::complex<double>> FFT_padding(const std::vector<int16_t>& data);
 
 /**
 *

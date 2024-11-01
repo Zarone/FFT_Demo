@@ -47,7 +47,9 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
     value[0][i] = 0;
   }
 
-  vector<std::complex<double>> frequencyData = DFT(data);
+  vector<int16_t> stripped_data = vector<int16_t>(data.begin()+HEADER_OFFSET, data.end());
+
+  vector<std::complex<double>> frequencyData = DFT(stripped_data);
   
   empty_file("./logs/DFT.log");
   for (size_t i = HEADER_OFFSET; i < len; i++) {
@@ -55,8 +57,9 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
     file_logger("./logs/DFT.log", value[0][i]); 
   }
 
-  empty_file("./logs/InverseDFT.log");
   vector<int16_t> recreation = InverseDFT(frequencyData);
+
+  empty_file("./logs/InverseDFT.log");
   for (size_t i = HEADER_OFFSET; i < len; i++) {
     value[1][i] = recreation[i-HEADER_OFFSET];
     file_logger("./logs/InverseDFT.log", value[1][i]); 
@@ -66,7 +69,7 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
 }
 
 vector<std::complex<double>> DFT(const vector<int16_t>& data) {
-  size_t len = data.size() - HEADER_OFFSET;
+  size_t len = data.size();
   const double NEGATIVE_TWO_PI_OVER_LEN = -2*M_PI/len;
 
   vector<std::complex<double>> output(len);
@@ -74,7 +77,7 @@ vector<std::complex<double>> DFT(const vector<int16_t>& data) {
   for (size_t i = 0; i < len; i++) {
     std::complex<double> sum = 0;
     for (size_t j = 0; j < len; j++) {
-      double dataValue = static_cast<double>(data[j+HEADER_OFFSET]);
+      double dataValue = static_cast<double>(data[j]);
       
       // improves frequency resolution sometimes
       dataValue *= windowingFunction(j, len);
