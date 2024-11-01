@@ -12,6 +12,8 @@ export class SocketHandler implements DataHandler {
     this.socket = io(URL, {
       withCredentials: true, // Ensure credentials are sent with CORS
       transports: ['websocket', 'polling'], // Use both websocket and polling transports
+      timeout: 500000,
+      ackTimeout: 500000,
     });
 
     this.setupSocket(changeReceivedData);

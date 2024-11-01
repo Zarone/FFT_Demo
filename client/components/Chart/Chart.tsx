@@ -15,7 +15,12 @@ const convertRawBufferToWaveform = (wavData: ArrayBuffer): number[] => {
   //const sampleRate = dataView.getUint32(24, true); // Sample rate at byte offset 24
 
   // Number of samples at byte offset 40 (divided by 2 for 16-bit)
-  const numSamples: number = dataView.getUint32(40, true) / (bytesPerSample); 
+  //const numSamples: number = dataView.getUint32(40, true) / (bytesPerSample); 
+
+  // I actually malformed the header since it's sort of hard to fix it,
+  // so unless I fix that, this is actually more consistent.
+  const numSamples: number = (wavData.byteLength-44)/bytesPerSample;
+
   const waveform: number[] = Array(numSamples); // Array to hold normalized amplitude values
 
   const startOffset = 44; // 44 bytes at start of wav file are header data

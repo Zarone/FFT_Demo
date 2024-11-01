@@ -17,7 +17,7 @@ export default function LineGraph(
 ) {
   const scroll = (e: WheelEvent<SVGSVGElement>) => {
     if (!setScale) return;
-    setScale(Math.max(0.5, scale*(1+e.deltaY/50)));
+    setScale(Math.max(0.5, scale*(1+e.deltaY/500)));
     e.preventDefault();
     e.stopPropagation();
   }

@@ -25,7 +25,7 @@ let io = require("socket.io")(http, {
   methods: ['GET', 'POST'],
   credentials: true,
   transports: ['websocket'],
-  pingTimeout: 60000,
+  pingTimeout: 500000,
   pingInterval: 25000,
 });
 
