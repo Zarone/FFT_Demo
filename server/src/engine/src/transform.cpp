@@ -47,17 +47,21 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
   numElements = 2;
   const size_t len = data.size();
 
-  //vector<vector<int16_t>> value(numElements, vector<int16_t>(data.size()));
   vector<vector<int16_t>> value(numElements);
 
   vector<int16_t> stripped_data = vector<int16_t>(data.begin()+HEADER_OFFSET, data.end());
 
-  //vector<complex<double>> frequencyData = DFT(stripped_data);
+  //vector<complex<double>> frequencyData = DFT(stripped_data, false);
+  //size_t freq_len = frequencyData.size() + HEADER_OFFSET;
+  //value[0] = vector<int16_t>(std::max(freq_len, len));
   
   //empty_file("./logs/DFT.log");
   //for (size_t i = HEADER_OFFSET; i < len; i++) {
     //value[0][i] = (int16_t) hypot(frequencyData[i-HEADER_OFFSET].imag(), frequencyData[i-HEADER_OFFSET].real());
     //file_logger("./logs/DFT.log", value[0][i]); 
+  //}
+  //for (size_t i = freq_len; i < len; i++) {
+    //value[0][i] = 0;
   //}
   
   vector<complex<double>> frequencyData = FFT_padding(stripped_data);
@@ -74,28 +78,31 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
   }
 
 
-  vector<int16_t> recreation = InverseDFT(frequencyData, false);
+  //vector<int16_t> recreation = InverseDFT(frequencyData, false);
+  //size_t rec_len = recreation.size() + HEADER_OFFSET;
+  //value[1] = vector<int16_t>(len);
+
+  //empty_file("./logs/InverseDFT.log");
+  //for (size_t i = HEADER_OFFSET; i < std::min(rec_len, len); i++) {
+    //value[1][i] = recreation[i-HEADER_OFFSET];
+    //file_logger("./logs/InverseDFT.log", value[1][i]); 
+  //}
+  //for (size_t i = rec_len; i < len; ++i) {
+    //value[1][i] = 0;
+  //}
+
+  vector<int16_t> recreation = IFFT_padding(frequencyData);
   size_t rec_len = recreation.size() + HEADER_OFFSET;
   value[1] = vector<int16_t>(len);
 
-  empty_file("./logs/InverseDFT.log");
-  for (size_t i = HEADER_OFFSET; i < std::min(rec_len, len); i++) {
+  empty_file("./logs/InverseFFTp.log");
+  for (size_t i = HEADER_OFFSET; i < len; i++) {
     value[1][i] = recreation[i-HEADER_OFFSET];
-    file_logger("./logs/InverseDFT.log", value[1][i]); 
+    file_logger("./logs/InverseFFTp.log", value[1][i]); 
   }
   for (size_t i = rec_len; i < len; ++i) {
     value[1][i] = 0;
   }
-
-  //vector<int16_t> recreation = IFFT_padding(frequencyData);
-  //len = recreation.size() + HEADER_OFFSET;
-  //value[1] = vector<int16_t>(len);
-
-  //empty_file("./logs/InverseFFTp.log");
-  //for (size_t i = HEADER_OFFSET; i < len; i++) {
-    //value[1][i] = recreation[i-HEADER_OFFSET];
-    //file_logger("./logs/InverseFFTp.log", value[1][i]); 
-  //}
 
   auto end = std::chrono::high_resolution_clock::now();
 
@@ -179,6 +186,66 @@ vector<complex<double>> FFT_padding(const vector<int16_t>& data) {
 
   for (size_t i = 0; i < next_radix_2; ++i) {
     output[i] = raw_data[i];
+  }
+
+  return output;
+}
+
+// uses pointers instead of vectors
+void raw_IFFT_padding(complex<double>* data, size_t n) {
+  const double TWO_PI_OVER_LEN = 2*M_PI/n;
+
+  // base case
+  if (n == 1) {
+    return;
+  } else {
+    complex<double> odd[n/2];
+    complex<double> even[n/2];
+    for (size_t i = 0; i < n; i+=2) {
+      odd[i/2] = data[i+1];
+      even[i/2] = data[i];
+    }
+
+    raw_IFFT_padding(odd, n/2);
+    raw_IFFT_padding(even, n/2);
+
+    // minor optimization
+    complex<double> shift = exp(
+      complex<double>(0.0, TWO_PI_OVER_LEN) 
+    ); 
+    complex<double> cur = complex<double>(1.0, 0.0);
+
+    for (size_t i = 0; i < n/2; i++) {
+      complex<double> odd_multiple = odd[i] * cur;
+      cur *= shift;
+
+      data[i] = even[i] + odd_multiple;
+      data[i+n/2] = even[i] - odd_multiple;
+    }
+
+  }
+}
+
+vector<int16_t> IFFT_padding(const vector<complex<double>>& data) {
+  size_t len = data.size();
+  size_t next_radix_2 = 1;
+  while (next_radix_2 < len) next_radix_2 <<= 1; // Round up to the next power of 2
+
+  if (len != next_radix_2) {
+    printf("len %zi should be next_radix_2 %zi\n", len, next_radix_2);
+    exit(EXIT_FAILURE);
+  }
+
+  complex<double> raw_data[len];
+  vector<int16_t> output(len);
+  for (size_t i = 0; i < len; ++i) {
+    raw_data[i] = data[i];
+  }
+
+  raw_IFFT_padding(raw_data, next_radix_2);
+
+  for (size_t i = 0; i < len; ++i) {
+    output[i] = (double)(raw_data[i].real())/len;
   }
 
   return output;
