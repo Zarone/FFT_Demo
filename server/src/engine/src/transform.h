@@ -34,41 +34,27 @@ std::vector<std::vector<int16_t>> transformAmplitudeData(const std::vector<int16
 
 /**
  *
+ * @brief Performs the fourier transform
  *
- * @brief A function used to preprocess the input data to better find frequencies
- *
- * @param index
- * @param length
+ * @param outputReference a reference to put the actual frequency data into
+ * @param inputData data on which to run the fourier transform
+ * @param frequencyData A reference where we can put our frequency data
+ * @param len the length of the array we're writing to
+ * @param fast whether or not the perform FFT
+ * @param windowed whether or not to window the function
  *
  */
-double windowingFunction(double index, double length);
+void performFourierTransform(std::vector<int16_t>& outputReference, std::vector<std::complex<double>>& frequencyData, std::vector<int16_t> inputData, size_t len, bool fast, bool windowed);
 
 /**
-*
-*
-* @brief Just a simple DFT
-*/
-std::vector<std::complex<double>> DFT(const std::vector<int16_t>& data, bool windowed);
-
-/**
-*
-*
-* @brief The actual FFT algorithm (using zero padding)
-*/
-std::vector<std::complex<double>> FFT_padding(const std::vector<int16_t>& data);
-
-/**
-*
-*
-*
-*
-* @brief Just a simple inverse DFT
-*/
-std::vector<int16_t> InverseDFT(const std::vector<std::complex<double>>& data, bool windowed);
-
-/**
-*
-*
-* @brief The actual Inverse FFT algorithm (using zero padding)
-*/
-std::vector<int16_t> IFFT_padding(const std::vector<std::complex<double>>& data);
+ *
+ * @brief Performs the fourier transform
+ *
+ * @param outputReference a reference to put the actual frequency data into
+ * @param inputData data on which to run the fourier transform
+ * @param len the length of the array we're writing to
+ * @param fast whether or not the perform FFT
+ * @param windowed whether or not to window the function
+ *
+ */
+void performInverseFourierTransform(std::vector<int16_t>& outputReference, std::vector<std::complex<double>>& inputData, size_t len, bool fast, bool windowed);

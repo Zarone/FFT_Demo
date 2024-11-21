@@ -27,6 +27,7 @@ let io = require("socket.io")(http, {
   transports: ['websocket'],
   pingTimeout: 500000,
   pingInterval: 25000,
+  maxHttpBufferSize: 1e8
 });
 
 // whenever a user connects on port 3000 via
@@ -34,7 +35,7 @@ let io = require("socket.io")(http, {
 io.on("connection", (socket: any) => {
   socket.on("dataTransfer", (data: Uint8Array)=>{
 
-    console.log("Data Transfer");
+    console.log("Data Received");
 
     // This is necessary because the actual buffer can start earlier than the uint8array
     const cutBuffer: ArrayBuffer = data.buffer.slice(data.byteOffset, data.byteOffset+data.byteLength);
@@ -44,6 +45,7 @@ io.on("connection", (socket: any) => {
     console.groupEnd();
 
     console.group("Emit: Printing Header Info");
+    console.log("Processing...");
     const buf: ArrayBuffer[] = transformWavFileBuffer(cutBuffer);
     console.log(buf[0]?.slice(0,44));
     console.groupEnd();

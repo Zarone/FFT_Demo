@@ -21,17 +21,25 @@ const convertRawBufferToWaveform = (wavData: ArrayBuffer): number[] => {
   // so unless I fix that, this is actually more consistent.
   const numSamples: number = (wavData.byteLength-44)/bytesPerSample;
 
-  const waveform: number[] = Array(numSamples); // Array to hold normalized amplitude values
-
   const startOffset = 44; // 44 bytes at start of wav file are header data
 
-  for (let i = 0; i < numSamples; i++) {
+  // this is to make rendering more efficient
+  const RENDERING_MAX = 10E4;
+  const batch = Math.ceil(numSamples/RENDERING_MAX);
+  console.log(batch);
 
-    // Get the 16-bit signed integer value (2 bytes)
-    const sample: number = dataView.getInt16(startOffset+bytesPerSample*i, true);
+  const waveform: number[] = Array(Math.floor(numSamples/batch)); // Array to hold normalized amplitude values
 
-    // Normalize to range -1.0 to 1.0
-    waveform[i] = sample / Math.pow(2, bitsPerSample-1);
+  for (let i = 0; i < numSamples; i+=batch) {
+    let sum = 0;
+    for (let j = 0; j < batch && i+j<numSamples; ++j) {
+      // Get the 16-bit signed integer value (2 bytes)
+      const sample: number = dataView.getInt16(startOffset+bytesPerSample*(i+j), true);
+
+      // Normalize to range -1.0 to 1.0
+      sum += sample / Math.pow(2, bitsPerSample-1);
+    }
+    waveform[i/batch] = sum/batch;
   }
   
   return waveform;
