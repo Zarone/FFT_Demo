@@ -30,4 +30,4 @@ std::vector<std::complex<double>> DFT(const std::vector<int16_t>& data, bool win
 *
 * @brief Just a simple inverse DFT
 */
-std::vector<int16_t> InverseDFT(const std::vector<std::complex<double>>& data, bool windowed);
+std::vector<int16_t> inverseDFT(const std::vector<std::complex<double>>& data, bool windowed);

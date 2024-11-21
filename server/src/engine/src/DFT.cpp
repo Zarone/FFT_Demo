@@ -30,7 +30,7 @@ vector<complex<double>> DFT(const vector<int16_t>& data, bool windowed) {
   return output;
 }
 
-vector<int16_t> InverseDFT(const vector<complex<double>>& data, bool windowed) {
+vector<int16_t> inverseDFT(const vector<complex<double>>& data, bool windowed) {
   size_t len = data.size();
   const double TWO_PI_OVER_LEN = 2*M_PI/len;
 

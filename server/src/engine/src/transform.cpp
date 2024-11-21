@@ -82,9 +82,9 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
 void performInverseFourierTransform(vector<int16_t>& outputReference, vector<complex<double>>& inputData, size_t len, bool fast, bool windowed) {
   vector<int16_t> recreation;
   if (!fast) {
-    recreation = InverseDFT(inputData, windowed);
+    recreation = inverseDFT(inputData, windowed);
   } else {
-    recreation = IFFT_padding(inputData);
+    recreation = IFFTPadding(inputData);
   }
 
   size_t rec_len = recreation.size() + HEADER_OFFSET;
@@ -112,7 +112,7 @@ void performFourierTransform(vector<int16_t>& outputReference, vector<complex<do
   if (!fast) {
     frequencyData = DFT(inputData, windowed);
   } else {
-    frequencyData = FFT_padding(inputData);
+    frequencyData = FFTPadding(inputData);
   }
 
   size_t freq_len = frequencyData.size() + HEADER_OFFSET;
