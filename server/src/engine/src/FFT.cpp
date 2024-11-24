@@ -6,9 +6,99 @@
 using std::vector;
 using std::complex;
 
-// uses pointers instead of vectors
-void rawFFT(complex<double>* data, size_t n, bool inverse) {
+//void rawInPlaceFFT(complex<double>* data, size_t n, bool inverse) {
+  //if (n <= 1) {
+    //return;
+  //}
 
+  //const double TWO_PI_OVER_LEN = 2 * M_PI / n;
+  //const double multiple = inverse ? TWO_PI_OVER_LEN : -TWO_PI_OVER_LEN;
+
+  //size_t j = 0;
+  //for (size_t i = 0; i < n; ++i) {
+    //if (j > i) {
+      //std::swap(data[i], data[j]);
+    //}
+    //size_t m = n / 2;
+    //while (m >= 1 && j >= m) {
+      //j -= m;
+      //m /= 2;
+    //}
+    //j += m;
+  //}
+
+  //for (size_t len = 2; len <= n; len *= 2) {
+    //std::complex<double> wlen = std::exp(std::complex<double>(0.0, multiple / len));
+    //for (size_t i = 0; i < n; i += len) {
+      //std::complex<double> w = 1.0; 
+      //for (size_t j = 0; j < len / 2; ++j) {
+        //std::complex<double> u = data[i + j];
+        //std::complex<double> v = data[i + j + len / 2] * w;
+        //data[i + j] = u + v;
+        //data[i + j + len / 2] = u - v;
+        //w *= wlen;
+      //}
+    //}
+  //}
+//}
+
+int bit_reverse(int x, int bit_len) {
+  int result = 0;
+  for (int i = 0; i < bit_len; ++i) {
+    result = (result << 1) | (x & 1);
+    x = x >> 1;
+  }
+  return result;
+}
+
+void bit_reverse_index(complex<double>* arr, int len) {
+  for (int i = 0; i < len; ++i){ 
+    int j = bit_reverse(i, log2(len));
+    if (i < j) {
+      // swap i and j
+      complex<double> temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+  }
+}
+
+void rawInPlaceFFT(complex<double>* data, size_t n, bool inverse, bool initCall = true) {
+  // base case
+  if (n == 1) {
+    return;
+  } 
+
+  const double TWO_PI_OVER_LEN = 2*M_PI/n;
+  const double multiple = inverse ? TWO_PI_OVER_LEN : -TWO_PI_OVER_LEN;
+
+  if (initCall) {
+    bit_reverse_index(data, n);
+  }
+  
+  rawInPlaceFFT(data, n/2, inverse, false);
+  rawInPlaceFFT(data+n/2, n/2, inverse, false);
+
+  // minor optimization
+  complex<double> shift = exp(
+    complex<double>(0.0, multiple) 
+  ); 
+  complex<double> cur = complex<double>(1.0, 0.0);
+
+  for (size_t i = 0; i < n/2; ++i) {
+    complex<double> even_value = data[i];
+    complex<double> odd_value = data[i+n/2];
+
+    complex<double> odd_multiple = odd_value * cur;
+    cur *= shift;
+
+    data[i] = even_value + odd_multiple;
+    data[i+n/2] = even_value - odd_multiple;
+  }
+  
+}
+
+void rawFFT(complex<double>* data, size_t n, bool inverse) {
   // base case
   if (n == 1) {
     return;
@@ -73,7 +163,7 @@ vector<complex<double>> FFTPadding(const vector<int16_t>& data) {
   }
   */
 
-  rawFFT(raw_data, next_radix_2, false);
+  rawInPlaceFFT(raw_data, next_radix_2, false);
 
   for (size_t i = 0; i < next_radix_2; ++i) {
     output[i] = raw_data[i];
@@ -98,7 +188,7 @@ vector<int16_t> IFFTPadding(const vector<complex<double>>& data) {
     raw_data[i] = data[i];
   }
 
-  rawFFT(raw_data, next_radix_2, true);
+  rawInPlaceFFT(raw_data, next_radix_2, true);
 
   for (size_t i = 0; i < len; ++i) {
     output[i] = (double)(raw_data[i].real())/len;
