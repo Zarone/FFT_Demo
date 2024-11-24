@@ -48,8 +48,6 @@ export default function Path({data, height, width, colorPlayed, colorUnplayed, t
   const [pathD, setPathD] = useState<string>();
 
   useEffect(() => {
-    console.log("Recalculating Path");
-
     if (!data || data.length == 0) return;
 
     dataMin.current = customMin(data);

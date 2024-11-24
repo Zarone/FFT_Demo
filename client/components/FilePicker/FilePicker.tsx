@@ -19,7 +19,7 @@ export default function FilePicker( {handler, updateFileData}: Args ) {
     const file: File = event.target.files[0];
 
     // If file is not a proper audio file
-    if (file.type != "audio/x-wav") {
+    if (file.type != "audio/x-wav" && file.type != "audio/wav") {
       console.error(`File was ${file.type}`);
       alert("Please select a .wav audio file");
       return;

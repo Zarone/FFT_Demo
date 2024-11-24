@@ -24,9 +24,8 @@ const convertRawBufferToWaveform = (wavData: ArrayBuffer): number[] => {
   const startOffset = 44; // 44 bytes at start of wav file are header data
 
   // this is to make rendering more efficient
-  const RENDERING_MAX = 10E4;
+  const RENDERING_MAX = 8E4;
   const batch = Math.ceil(numSamples/RENDERING_MAX);
-  console.log(batch);
 
   const waveform: number[] = Array(Math.floor(numSamples/batch)); // Array to hold normalized amplitude values
 

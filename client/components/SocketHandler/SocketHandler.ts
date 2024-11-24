@@ -15,6 +15,7 @@ export class SocketHandler implements DataHandler {
       timeout: 500000,
       ackTimeout: 500000,
     });
+    console.log("make socket");
 
     this.setupSocket(changeReceivedData);
   }

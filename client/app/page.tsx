@@ -14,7 +14,10 @@ export default function Home() {
   // changes how all of the charts render
   const [rendererScale, setRendererScale] = useState<number>(1);
 
-  const handlerRef = useRef<SocketHandler>(new SocketHandler(changeReceivedData));
+  const handlerRef = useRef<SocketHandler>();
+  if (!handlerRef.current) {
+    handlerRef.current = new SocketHandler(changeReceivedData);
+  }
 
   return (
     <div className={styles.container}>
@@ -32,17 +35,34 @@ export default function Home() {
         setRendererScale={setRendererScale}
       />
 
-      { receivedData.length == 0 ? "" : <header className="m-5 mt-20 text-center text-xl">Algorithm Return Value: </header> }
+      { /*receivedData.length == 0 ? "" : <header className="m-5 mt-20 text-center text-xl">Algorithm Return Value: </header>*/ }
 
       { 
-        receivedData.map((arrData: ArrayBuffer, index: number)=>{
+        /*receivedData.map((arrData: ArrayBuffer, index: number)=>{
           return <Chart 
             key={index}
             data={arrData} 
             rendererScale={rendererScale} 
             setRendererScale={setRendererScale}
           />
-        }) 
+        }) */
+      }
+
+      { receivedData.length == 0 ? "" : 
+        <div>
+          <header className="m-5 mt-20 text-center text-xl">Frequency Data</header>
+          <Chart 
+            data={receivedData[0]} 
+            rendererScale={rendererScale} 
+            setRendererScale={setRendererScale}
+          />
+          <header className="m-5 mt-20 text-center text-xl">Reconstruction from Inverse Fourier Transform </header>
+          <Chart 
+            data={receivedData[1]} 
+            rendererScale={rendererScale} 
+            setRendererScale={setRendererScale}
+          />
+        </div>
       }
     </div>
   );
