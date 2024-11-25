@@ -6,42 +6,6 @@
 using std::vector;
 using std::complex;
 
-//void rawInPlaceFFT(complex<double>* data, size_t n, bool inverse) {
-  //if (n <= 1) {
-    //return;
-  //}
-
-  //const double TWO_PI_OVER_LEN = 2 * M_PI / n;
-  //const double multiple = inverse ? TWO_PI_OVER_LEN : -TWO_PI_OVER_LEN;
-
-  //size_t j = 0;
-  //for (size_t i = 0; i < n; ++i) {
-    //if (j > i) {
-      //std::swap(data[i], data[j]);
-    //}
-    //size_t m = n / 2;
-    //while (m >= 1 && j >= m) {
-      //j -= m;
-      //m /= 2;
-    //}
-    //j += m;
-  //}
-
-  //for (size_t len = 2; len <= n; len *= 2) {
-    //std::complex<double> wlen = std::exp(std::complex<double>(0.0, multiple / len));
-    //for (size_t i = 0; i < n; i += len) {
-      //std::complex<double> w = 1.0; 
-      //for (size_t j = 0; j < len / 2; ++j) {
-        //std::complex<double> u = data[i + j];
-        //std::complex<double> v = data[i + j + len / 2] * w;
-        //data[i + j] = u + v;
-        //data[i + j + len / 2] = u - v;
-        //w *= wlen;
-      //}
-    //}
-  //}
-//}
-
 int bit_reverse(int x, int bit_len) {
   int result = 0;
   for (int i = 0; i < bit_len; ++i) {
