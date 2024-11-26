@@ -1,3 +1,3 @@
 export interface DataHandler {
-  sendData: (buf: ArrayBuffer) => void;
+  sendData: (buf: ArrayBuffer, fastEnabled: boolean) => void;
 }

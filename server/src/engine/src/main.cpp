@@ -47,7 +47,7 @@ Local<Array> arrToV8ArrayOfBuffers(Isolate* isolate, const vector<vector<int16_t
   return v8Array;
 }
 
-void TransformWavFileBuffer(const FunctionCallbackInfo<Value>& args) {
+void TransformWavFileBuffer(const FunctionCallbackInfo<Value>& args, bool fast) {
   Isolate* isolate = args.GetIsolate();
   v8::HandleScope handleScope(isolate);
 
@@ -61,13 +61,22 @@ void TransformWavFileBuffer(const FunctionCallbackInfo<Value>& args) {
 
   vector<int16_t> arr = v8ArrayToData(localArr);
 
-  vector<vector<int16_t>> response = transformWAVData(arr);
+  vector<vector<int16_t>> response = transformWAVData(arr, fast);
   
   args.GetReturnValue().Set(arrToV8ArrayOfBuffers(isolate, response));
 }
 
+void TransformWavFileBufferDFT(const FunctionCallbackInfo<Value>& args) {
+  TransformWavFileBuffer(args, false);
+}
+
+void TransformWavFileBufferFFT(const FunctionCallbackInfo<Value>& args) {
+  TransformWavFileBuffer(args, true);
+}
+
 void Initialize(Local<Object> exports) {
-  NODE_SET_METHOD(exports, "transformWavFileBuffer", TransformWavFileBuffer);
+  NODE_SET_METHOD(exports, "transformWavFileBufferDFT", TransformWavFileBufferDFT);
+  NODE_SET_METHOD(exports, "transformWavFileBufferFFT", TransformWavFileBufferFFT);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)

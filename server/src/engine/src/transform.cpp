@@ -13,7 +13,7 @@
 using std::vector;
 using std::complex;
 
-vector<vector<int16_t>> transformWAVData(const vector<int16_t>& data) {
+vector<vector<int16_t>> transformWAVData(const vector<int16_t>& data, bool fast) {
 
   // Error case: too small
   if (data.size() < HEADER_OFFSET) {
@@ -29,7 +29,7 @@ vector<vector<int16_t>> transformWAVData(const vector<int16_t>& data) {
 
   // Let transformAmplitudeData decide the number of elements
   int numElements;
-  vector<vector<int16_t>> value = transformAmplitudeData(data, numElements);
+  vector<vector<int16_t>> value = transformAmplitudeData(data, numElements, fast);
 
   // Add header info back
   for (int i = 0; i < numElements; i++) {
@@ -41,7 +41,8 @@ vector<vector<int16_t>> transformWAVData(const vector<int16_t>& data) {
   return value;
 }
 
-vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int& numElements) {
+vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int& numElements, bool fast) {
+  printf("fast = %i\n", fast);
 
    // Get starting timepoint
   auto start = std::chrono::high_resolution_clock::now();
@@ -55,17 +56,9 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
 
   vector<complex<double>> frequencyData;
   
-  performFourierTransform(value[0], frequencyData, stripped_data, len, true, false);
+  performFourierTransform(value[0], frequencyData, stripped_data, len, fast, false);
   
-  // TODO:
-  // find dominant frequencies
-  //  find top x frequency
-  //
-  //  that index gives you a complex number and
-  //  the length of that number is the amplitude
-  //  the arctan is the offset
-
-  performInverseFourierTransform(value[1], frequencyData, len, true, false);
+  performInverseFourierTransform(value[1], frequencyData, len, fast, false);
 
   auto end = std::chrono::high_resolution_clock::now();
 

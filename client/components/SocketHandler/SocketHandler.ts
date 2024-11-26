@@ -39,9 +39,9 @@ export class SocketHandler implements DataHandler {
     this.socket.on('decomposedTransfer', onDecomposedTransfer);
   }
 
-  public sendData = async (buffer: ArrayBuffer) => {
+  public sendData = async (buffer: ArrayBuffer, fastEnabled: boolean) => {
     console.log(`Emitted Data Transfer with Buffer of Size ${buffer.byteLength}`);
-    this.socket.emit("dataTransfer", new Uint8Array(buffer)); 
+    this.socket.emit(fastEnabled ? "dataTransferFast" : "dataTransfer", new Uint8Array(buffer)); 
     console.group("Printing Header Info");
     console.log(new Uint8Array(buffer));
     console.groupEnd();

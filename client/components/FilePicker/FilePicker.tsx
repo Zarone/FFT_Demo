@@ -5,9 +5,10 @@ import { DataHandler } from "../DataHandler/DataHandler";
 interface Args {
   handler: DataHandler;
   updateFileData: Dispatch<SetStateAction<ArrayBuffer>>;
+  fastEnabled: boolean;
 }
 
-export default function FilePicker( {handler, updateFileData}: Args ) {
+export default function FilePicker( {handler, updateFileData, fastEnabled}: Args ) {
 
   const handleFileChange: ChangeEventHandler<HTMLInputElement> = async (event: ChangeEvent<HTMLInputElement>) => {
     // If for some reason the file is not found
@@ -36,7 +37,7 @@ export default function FilePicker( {handler, updateFileData}: Args ) {
 
     console.error("TODO: ADD LOADING ANIMATION");
 
-    handler.sendData(buffer);
+    handler.sendData(buffer, fastEnabled);
   }
 
   return (

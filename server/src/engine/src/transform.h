@@ -15,9 +15,10 @@ const size_t HEADER_OFFSET = 22;
   *
   * @param data The actual array data
   * @param length The number of elements in data
+  * @param fast Whether or not to use Fast Fourier Transform instead of DFT
   *
   */
-std::vector<std::vector<int16_t>> transformWAVData(const std::vector<int16_t>& data);
+std::vector<std::vector<int16_t>> transformWAVData(const std::vector<int16_t>& data, bool fast);
 
 
 /**
@@ -28,9 +29,10 @@ std::vector<std::vector<int16_t>> transformWAVData(const std::vector<int16_t>& d
 * @param data The actual array data
 * @param length The number of elements in data
 * @param numElements A pointer to store the number of elements in the returned array
+* @param fast Whether or not to use Fast Fourier Transform instead of DFT
 *
 */
-std::vector<std::vector<int16_t>> transformAmplitudeData(const std::vector<int16_t>& data, int& numElements);
+std::vector<std::vector<int16_t>> transformAmplitudeData(const std::vector<int16_t>& data, int& numElements, bool fast);
 
 /**
  *
