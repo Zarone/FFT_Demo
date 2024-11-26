@@ -13,6 +13,8 @@
 using std::vector;
 using std::complex;
 
+#define WINDOW 1
+
 vector<vector<int16_t>> transformWAVData(const vector<int16_t>& data, bool fast) {
 
   // Error case: too small
@@ -56,9 +58,9 @@ vector<vector<int16_t>> transformAmplitudeData(const vector<int16_t>& data, int&
 
   vector<complex<double>> frequencyData;
   
-  performFourierTransform(value[0], frequencyData, stripped_data, len, fast, false);
+  performFourierTransform(value[0], frequencyData, stripped_data, len, fast, WINDOW);
   
-  performInverseFourierTransform(value[1], frequencyData, len, fast, false);
+  performInverseFourierTransform(value[1], frequencyData, len, fast, WINDOW);
 
   auto end = std::chrono::high_resolution_clock::now();
 
@@ -78,7 +80,7 @@ void performInverseFourierTransform(vector<int16_t>& outputReference, vector<com
   if (!fast) {
     recreation = inverseDFT(inputData, windowed);
   } else {
-    recreation = IFFTPadding(inputData);
+    recreation = IFFTPadding(inputData, windowed);
   }
 
   size_t rec_len = recreation.size() + HEADER_OFFSET;
@@ -106,7 +108,7 @@ void performFourierTransform(vector<int16_t>& outputReference, vector<complex<do
   if (!fast) {
     frequencyData = DFT(inputData, windowed);
   } else {
-    frequencyData = FFTPadding(inputData);
+    frequencyData = FFTPadding(inputData, windowed);
   }
 
   size_t freq_len = frequencyData.size() + HEADER_OFFSET;

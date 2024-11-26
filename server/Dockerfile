@@ -24,10 +24,10 @@ RUN npm run build
 # Remove dev dependencies after building
 RUN npm prune --production
 
-CMD ["npm", "run", "start"]
+#CMD ["npm", "run", "start"]
 
 
 # DEBUGGING STUFF
-#RUN apt-get update && apt-get install -y gdb
-#CMD ["gdb", "--args", "node", "./build/index.js"]
+RUN apt-get update && apt-get install -y gdb
+CMD ["gdb", "--args", "node", "./build/index.js"]
 

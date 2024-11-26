@@ -1,6 +1,7 @@
 #include <complex>
 #include <vector>
 
+#include "windowingFunc.h"
 #include "FFT.h"
 
 using std::vector;
@@ -100,7 +101,7 @@ void rawFFT(complex<double>* data, size_t n, bool inverse) {
   
 }
 
-vector<complex<double>> FFTPadding(const vector<int16_t>& data) {
+vector<complex<double>> FFTPadding(const vector<int16_t>& data, bool windowed) {
   size_t len = data.size();
   size_t next_radix_2 = 1;
   while (next_radix_2 < len) next_radix_2 <<= 1; // Round up to the next power of 2
@@ -110,7 +111,9 @@ vector<complex<double>> FFTPadding(const vector<int16_t>& data) {
   complex<double> raw_data[next_radix_2];
   vector<complex<double>> output(next_radix_2);
   for (size_t i = 0; i < len; ++i) {
-    raw_data[i] = data[i];
+    double multiple = 1;
+    if (windowed) multiple = windowingFunction(i, next_radix_2);
+    raw_data[i] = data[i] * multiple;
   }
   for (size_t i = len; i < next_radix_2; ++i) {
     raw_data[i] = 0;
@@ -136,7 +139,7 @@ vector<complex<double>> FFTPadding(const vector<int16_t>& data) {
   return output;
 }
 
-vector<int16_t> IFFTPadding(const vector<complex<double>>& data) {
+vector<int16_t> IFFTPadding(const vector<complex<double>>& data, bool windowed) {
   size_t len = data.size();
   size_t next_radix_2 = 1;
   while (next_radix_2 < len) next_radix_2 <<= 1; // Round up to the next power of 2
@@ -156,6 +159,7 @@ vector<int16_t> IFFTPadding(const vector<complex<double>>& data) {
 
   for (size_t i = 0; i < len; ++i) {
     output[i] = (double)(raw_data[i].real())/len;
+    if (windowed) output[i] /= windowingFunction(i, len);
   }
 
   return output;

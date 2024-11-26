@@ -17,7 +17,9 @@
         "./src/DFT.cpp",
         "./src/DFT.h",
         "./src/FFT.cpp",
-        "./src/FFT.h"
+        "./src/FFT.h",
+        "./src/windowingFunc.cpp",
+        "./src/windowingFunc.h",
       ],
     }
   ]

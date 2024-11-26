@@ -1,6 +1,7 @@
 #include <vector>
 #include <complex>
 
+#include "windowingFunc.h"
 #include "DFT.h"
 
 using std::vector;
@@ -50,10 +51,5 @@ vector<int16_t> inverseDFT(const vector<complex<double>>& data, bool windowed) {
   }
 
   return output;
-}
-
-double windowingFunction(double index, double length) {
-  // Hamming Window
-  return 0.54 - 0.46 * std::cos(2 * M_PI * index / (length-1));
 }
 
