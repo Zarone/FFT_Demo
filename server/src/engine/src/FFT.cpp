@@ -165,3 +165,92 @@ vector<int16_t> IFFTPadding(const vector<complex<double>>& data, bool windowed) 
   return output;
 }
 
+// https://en.wikipedia.org/wiki/Chirp_Z-transform
+// https://en.wikipedia.org/wiki/Convolution_theorem
+vector<complex<double>> BluesteinFFT(const vector<int16_t>& data, bool windowed) {
+    size_t len = data.size();
+    size_t next_radix_2 = 1;
+    while (next_radix_2 < 2*len-1) next_radix_2 <<= 1; // Round up to 2N-1
+
+    // Precompute the chirp factors (thing outside the sum)
+    complex<double> chirp[next_radix_2];
+    for (size_t i = 0; i < len; ++i) {
+      double angle = -M_PI * i * i / len;
+      chirp[i] = std::polar(1.0, angle); // e^(-i * pi * n^2 / len)
+    }
+    for (size_t i = len; i < next_radix_2; ++i) {
+      chirp[i] = complex<double>(0);
+    }
+
+    vector<complex<double>> a(next_radix_2, 0);
+    for (size_t i = 0; i < len; ++i) {
+      a[i] = complex<double>(data[i], 0) * chirp[i]; // x_n * e^(-i * pi * n^2 / len)
+    }
+
+    vector<complex<double>> b(next_radix_2, 0);
+    for (size_t i = 0; i < len; ++i) {
+      b[i] = conj(chirp[i]); // e^(i * pi * n^2 / len)
+      b[next_radix_2-i] = conj(chirp[i]); // e^(i * pi * n^2 / len)
+    }
+
+    rawInPlaceFFT(a.data(), next_radix_2, false);
+    rawInPlaceFFT(b.data(), next_radix_2, false);
+
+    for (size_t i = 0; i < next_radix_2; ++i) {
+      a[i] *= b[i];
+    }
+
+    rawInPlaceFFT(a.data(), next_radix_2, true);
+
+    a.resize(len);
+    for (size_t i = 0; i < len; ++i) {
+      a[i] *= chirp[i]/(double)next_radix_2/(double)next_radix_2;
+    }
+
+    return a;
+}
+
+vector<int16_t> BluesteinIFFT(const vector<complex<double>>& data, bool windowed) {
+    size_t len = data.size();
+    size_t next_radix_2 = 1;
+    while (next_radix_2 < 2*len-1) next_radix_2 <<= 1; // Round up to 2N-1
+
+    // Precompute the chirp factors (thing outside the sum)
+    complex<double> chirp[next_radix_2];
+    for (size_t i = 0; i < len; ++i) {
+      double angle = M_PI * i * i / len;
+      chirp[i] = std::polar(1.0, angle); // e^(-i * pi * n^2 / len)
+    }
+    for (size_t i = len; i < next_radix_2; ++i) {
+      chirp[i] = complex<double>(0);
+    }
+
+    vector<complex<double>> a(next_radix_2, 0);
+    for (size_t i = 0; i < len; ++i) {
+      a[i] = data[i] * chirp[i]; // x_n * e^(-i * pi * n^2 / len)
+    }
+
+    vector<complex<double>> b(next_radix_2, 0);
+    for (size_t i = 0; i < len; ++i) {
+      b[i] = conj(chirp[i]); // e^(i * pi * n^2 / len)
+      b[next_radix_2-i] = conj(chirp[i]); // e^(i * pi * n^2 / len)
+    }
+
+    rawInPlaceFFT(a.data(), next_radix_2, false);
+    rawInPlaceFFT(b.data(), next_radix_2, false);
+
+    for (size_t i = 0; i < next_radix_2; ++i) {
+      a[i] *= b[i];
+    }
+
+    rawInPlaceFFT(a.data(), next_radix_2, true);
+
+    vector<int16_t> output(len);
+    a.resize(len);
+    for (size_t i = 0; i < len; ++i) {
+      a[i] *= chirp[i]/(double)next_radix_2;
+      output[i] = a[i].real();
+    }
+
+    return output;
+}
