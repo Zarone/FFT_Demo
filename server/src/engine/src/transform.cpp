@@ -13,7 +13,7 @@
 using std::vector;
 using std::complex;
 
-#define WINDOW 0
+#define WINDOW 1
 
 vector<vector<int16_t>> transformWAVData(const vector<int16_t>& data, bool fast) {
 

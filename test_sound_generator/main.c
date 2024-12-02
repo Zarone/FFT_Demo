@@ -50,7 +50,6 @@ int main(int argc, char** args)
     return -1;
   }
   char* end;
-
   char* filename = args[1];
   double duration_seconds = strtod(args[2], &end);
 

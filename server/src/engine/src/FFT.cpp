@@ -60,7 +60,6 @@ void rawInPlaceFFT(complex<double>* data, size_t n, bool inverse, bool initCall 
     data[i] = even_value + odd_multiple;
     data[i+n/2] = even_value - odd_multiple;
   }
-  
 }
 
 void rawFFT(complex<double>* data, size_t n, bool inverse) {
@@ -98,7 +97,6 @@ void rawFFT(complex<double>* data, size_t n, bool inverse) {
     data[i] = even[i] + odd_multiple;
     data[i+n/2] = even[i] - odd_multiple;
   }
-  
 }
 
 vector<complex<double>> FFTPadding(const vector<int16_t>& data, bool windowed) {
@@ -119,16 +117,6 @@ vector<complex<double>> FFTPadding(const vector<int16_t>& data, bool windowed) {
     raw_data[i] = 0;
   }
   /**/
-
-  /*   Remove Elements   */ 
-  /*
-  next_radix_2/=2;
-  vector<complex<double>> output(next_radix_2);
-  complex<double> raw_data[next_radix_2];
-  for (size_t i = 0; i < next_radix_2; ++i) {
-    raw_data[i] = data[i];
-  }
-  */
 
   rawInPlaceFFT(raw_data, next_radix_2, false);
 
